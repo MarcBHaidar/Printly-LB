@@ -1,0 +1,4 @@
+import { NextResponse } from "next/server";
+import { randomUUID } from "node:crypto";
+import { uploadFile } from "../../lib/storage";
+export async function POST(request:Request){const form=await request.formData(),file=form.get("file");if(!(file instanceof File)||!file.size)return NextResponse.json({error:"No file selected."},{status:400});if(file.size>15*1024*1024)return NextResponse.json({error:"Please use a file smaller than 15 MB."},{status:400});if(!/[.](stl|3mf|obj|step|stp|jpg|jpeg|png|webp|pdf)$/i.test(file.name))return NextResponse.json({error:"Use a 3D model, image, or PDF reference."},{status:400});const ext=(file.name.split(".").pop()||"file").replace(/[^a-z0-9]/gi,"").toLowerCase(),key=`quotes/${Date.now()}-${randomUUID()}.${ext}`;return NextResponse.json({url:await uploadFile(key,file)});}
