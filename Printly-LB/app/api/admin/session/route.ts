@@ -1,0 +1,5 @@
+import { NextResponse } from "next/server";
+import { clearSessionCookie, createSessionCookie, validCredentials } from "../../../lib/admin-auth";
+export async function POST(request:Request){const body=await request.json() as {username?:string;password?:string};if(!(await validCredentials(String(body.username||""),String(body.password||"")))){await new Promise(resolve=>setTimeout(resolve,500));return NextResponse.json({error:"Incorrect username or password."},{status:401});}return NextResponse.json({ok:true},{headers:{"Set-Cookie":createSessionCookie(),"Cache-Control":"no-store"}});}
+export async function DELETE(){return NextResponse.json({ok:true},{headers:{"Set-Cookie":clearSessionCookie(),"Cache-Control":"no-store"}});}
+export async function PUT(request:Request){const {isAdminRequest}=await import("../../../lib/admin-auth");if(!isAdminRequest(request))return NextResponse.json({error:"Session expired"},{status:401,headers:{"Set-Cookie":clearSessionCookie(),"Cache-Control":"no-store"}});return NextResponse.json({ok:true},{headers:{"Set-Cookie":createSessionCookie(),"Cache-Control":"no-store"}});}
