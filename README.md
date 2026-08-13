@@ -10,7 +10,8 @@ uploads, testimonials, and administration area.
 3. Leave **Build Command** and **Output Directory** at their defaults.
 4. Create a Vercel Blob store and connect it to the project.
 5. Add the environment variables listed in `.env.example`.
-6. Redeploy the latest commit.
+6. Create the database tables once (see **Database schema** below).
+7. Redeploy the latest commit.
 
 The required runtime values are:
 
@@ -23,6 +24,18 @@ The required runtime values are:
 The public landing page and bundled portfolio imagery work without database or
 Blob credentials. Database-backed projects, testimonials, uploads, and admin
 features require the corresponding environment variables.
+
+## Database schema
+
+The app expects four tables: `projects`, `project_images`, `testimonials`, and
+`admin_credentials`. Create them once against your Neon database:
+
+```bash
+psql "$DATABASE_URL" -f db/schema.sql
+```
+
+The script is idempotent, so it is safe to re-run. You can also paste its
+contents into the Neon SQL editor.
 
 ## Local development
 
